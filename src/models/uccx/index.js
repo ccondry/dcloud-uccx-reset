@@ -1,10 +1,32 @@
 const uccx = require('./client')
 
+async function deleteCalendars () {
+  return deleteItems({
+    typeName: 'UCCX holiday calendars',
+    type: 'calendar',
+    validTypes: ['HolidayCalendar'],
+    idProperty: 'calId'
+  })
+}
+
+async function deleteApplications () {
+  return deleteItems({
+    typeName: 'UCCX applications',
+    type: 'application',
+    validTypes: ['Customer_Service'],
+    nameProperty: 'applicationName',
+    idProperty: 'applicationName',
+    nameParts: 3
+  })
+}
+
 async function deleteTeams () {
-  return deleteTeams({
+  return deleteItems({
     typeName: 'UCCX teams',
     type: 'team',
-    validTypes: ['Cumulus']
+    validTypes: ['Cumulus'],
+    nameProperty: 'teamname',
+    idProperty: 'teamId'
   })
 }
 
@@ -12,7 +34,9 @@ async function deleteSkills () {
   return deleteItems({
     typeName: 'UCCX skills',
     type: 'skill',
-    validTypes: ['Chat', 'Email', 'Voice', 'Outbound']
+    validTypes: ['Chat', 'Email', 'Voice', 'Outbound'],
+    nameProperty: 'skillName',
+    idProperty: 'skillId'
   })
 }
 
@@ -26,7 +50,7 @@ async function deleteCsqs () {
 
 async function deleteChatWidgets () {
   return deleteItems({
-    typeName: 'UCCX chat widget',
+    typeName: 'UCCX chat widgets',
     type: 'chatWidget',
     validTypes: ['Chat']
   })
@@ -35,47 +59,62 @@ async function deleteChatWidgets () {
 async function deleteItems ({
   typeName,
   type,
-  validTypes
+  validTypes,
+  nameProperty = 'name',
+  idProperty = 'id',
+  nameParts = 2
 }) {
   const skipped = []
   const success = []
   const fail = []
 
-  console.log(`listing ${typeName}s...`)
+  console.log(`listing ${typeName}...`)
   const items = await uccx[type].list()
-  console.log('found', items.length, typeName, items)
+  console.log('found', items.length, typeName, items[0])
+  // console.log('found', items.length, typeName, items)
 
   const filtered = items.filter(item => {
-    const parts = item.name.split('_')
+    const parts = item[nameProperty].split('_')
     // valid name has 2 parts
-    if (parts.length !== 2) {
-      skipped.push(item.name)
+    if (parts.length !== nameParts) {
+      skipped.push(item[nameProperty])
       return false
     }
-    // check prefix
-    if (!validTypes.includes(parts[0])) {
-      skipped.push(item.name)
-      return false
-    }
+
     // check suffix - it should be a number
-    if (isNaN(parts[1])) {
-      skipped.push(item.name)
+    const suffix = parts.pop()
+    if (isNaN(suffix)) {
+      skipped.push(item[nameProperty])
       return false
     }
+
+    // check prefix
+    const prefix = parts.join('_')
+    if (!validTypes.includes(prefix)) {
+      skipped.push(item[nameProperty])
+      return false
+    }
+
     //
     return true
   })
 
+  console.log('filtered', 'to', filtered.length, typeName)
   for (const item of filtered) {
     // delete!
     try {
-      await uccx[type].delete(item.id)
-      console.log('successfully deleted', typeName, item.name)
-      success.push(item.name)
+      await uccx[type].delete(item[idProperty])
+      console.log('successfully deleted', typeName, item[nameProperty])
+      success.push(item[nameProperty])
     } catch (e) {
-      console.log('failed to delete', typeName, item.name, e.message)
-      fail.push(item.name)
+      console.log('failed to delete', typeName, item[nameProperty], e.message)
+      fail.push(item[nameProperty])
     }
+  }
+  return {
+    success,
+    skipped,
+    fail
   }
 }
 
@@ -83,5 +122,7 @@ module.exports = {
   deleteCsqs,
   deleteChatWidgets,
   deleteSkills,
-  deleteTeams
+  deleteTeams,
+  deleteApplications,
+  deleteCalendars
 }
