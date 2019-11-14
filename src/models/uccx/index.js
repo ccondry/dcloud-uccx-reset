@@ -1,5 +1,21 @@
 const uccx = require('./client')
 
+async function deleteTeams () {
+  return deleteTeams({
+    typeName: 'UCCX teams',
+    type: 'team',
+    validTypes: ['Cumulus']
+  })
+}
+
+async function deleteSkills () {
+  return deleteItems({
+    typeName: 'UCCX skills',
+    type: 'skill',
+    validTypes: ['Chat', 'Email', 'Voice', 'Outbound']
+  })
+}
+
 async function deleteCsqs () {
   return deleteItems({
     typeName: 'UCCX CSQs',
@@ -25,13 +41,9 @@ async function deleteItems ({
   const success = []
   const fail = []
 
-  const typeName = 'UCCX chat widget'
-  const type = 'chatWidget'
-  const validTypes = ['Chat']
-
   console.log(`listing ${typeName}s...`)
   const items = await uccx[type].list()
-  console.log('found', items.length, typeName)
+  console.log('found', items.length, typeName, items)
 
   const filtered = items.filter(item => {
     const parts = item.name.split('_')
@@ -58,11 +70,11 @@ async function deleteItems ({
     // delete!
     try {
       await uccx[type].delete(item.id)
-      console.log('successfully deleted', typeName, csq.name)
-      success.push(csq.name)
+      console.log('successfully deleted', typeName, item.name)
+      success.push(item.name)
     } catch (e) {
-      console.log('failed to delete', typeName, csq.name, e.message)
-      fail.push(csq.name)
+      console.log('failed to delete', typeName, item.name, e.message)
+      fail.push(item.name)
     }
   }
 }
