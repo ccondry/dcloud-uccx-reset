@@ -1,7 +1,8 @@
 # dcloud-uccx-reset
-This is a script to delete all of the objects created by the dCloud Toolbox
-provision scripts. It will delete users in LDAP, phones CUCM, and multiple
-objects in UCCX.
+This is a script intended to be run against a UCCX instant demo session. It will
+delete all of the objects that have been created by the dCloud Toolbox user
+provision scripts. It will delete users in LDAP, phones and lines in CUCM, and
+multiple objects in UCCX.
 
 # usage
 1. copy the .env.example to .env and then edit the values in .env to match your
