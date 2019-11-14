@@ -13,6 +13,6 @@
     "cucm-axl": "^0.1.9",
     "dotenv": "^8.2.0",
     "simple-ldap-client": "^0.6.0",
-    "uccx-config-client": "^0.7.1"
+    "uccx-config-client": "^0.7.2"
   }
 }
