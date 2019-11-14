@@ -1,0 +1,18 @@
+{
+  "name": "dcloud-uccx-reset",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_EXTRA_CA_CERTS=/Users/coty/dcloud-root-ca.crt node src/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cucm-axl": "^0.1.9",
+    "dotenv": "^8.2.0",
+    "simple-ldap-client": "^0.6.0",
+    "uccx-config-client": "^0.7.1"
+  }
+}
