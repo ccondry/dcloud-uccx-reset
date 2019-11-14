@@ -1,5 +1,59 @@
 const uccx = require('./client')
 
+async function deleteTriggers () {
+  const typeName = 'UCCX triggers'
+  const type = 'trigger'
+  const nameProperty = 'directoryNumber'
+  const idProperty = 'directoryNumber'
+
+  const skipped = []
+  const success = []
+  const fail = []
+
+  console.log(`listing ${typeName}...`)
+  const items = await uccx[type].list()
+  console.log('found', items.length, typeName, items[0])
+  const filtered = items.filter(item => {
+    if (item[nameProperty].length !== 5) {
+      skipped.push(item[nameProperty])
+      return false
+    }
+    if (item[nameProperty].substring(0, 1) !== '2') {
+      skipped.push(item[nameProperty])
+      return false
+    }
+    //
+    return true
+  })
+  console.log('filtered', 'to', filtered.length, typeName)
+  for (const item of filtered) {
+    // delete!
+    try {
+      await uccx[type].delete(item[idProperty])
+      console.log('successfully deleted', typeName, item[nameProperty])
+      success.push(item[nameProperty])
+    } catch (e) {
+      console.log('failed to delete', typeName, item[nameProperty], e.message)
+      fail.push(item[nameProperty])
+    }
+  }
+  return {
+    success,
+    skipped,
+    fail
+  }
+}
+
+async function deleteCampaigns () {
+  return deleteItems({
+    typeName: 'UCCX outbound campaigns',
+    type: 'campaign',
+    validTypes: ['Agent'],
+    idProperty: 'campaignId',
+    nameProperty: 'campaignName'
+  })
+}
+
 async function deleteCalendars () {
   return deleteItems({
     typeName: 'UCCX holiday calendars',
@@ -124,5 +178,7 @@ module.exports = {
   deleteSkills,
   deleteTeams,
   deleteApplications,
-  deleteCalendars
+  deleteCalendars,
+  deleteTriggers,
+  deleteCampaigns
 }

@@ -24,6 +24,8 @@ async function go () {
     // console.log('deleting UCCX applications...')
     console.log(await uccx.deleteApplications())
     console.log(await uccx.deleteCalendars())
+    console.log(await uccx.deleteTriggers())
+    console.log(await uccx.deleteCampaigns())
   } catch (e) {
     console.log(e)
   }
