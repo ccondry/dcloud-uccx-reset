@@ -17,6 +17,10 @@ async function go () {
     console.log(await uccx.deleteCsqs())
     console.log('deleting UCCX Chat Widgets...')
     console.log(await uccx.deleteChatWidgets())
+    console.log('deleting UCCX skills...')
+    console.log(await uccx.deleteSkills())
+    console.log('deleting UCCX teams...')
+    console.log(await uccx.deleteTeams())
   } catch (e) {
     console.log(e)
   }
