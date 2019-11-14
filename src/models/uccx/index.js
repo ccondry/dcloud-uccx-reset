@@ -81,5 +81,7 @@ async function deleteItems ({
 
 module.exports = {
   deleteCsqs,
-  deleteChatWidgets
+  deleteChatWidgets,
+  deleteSkills,
+  deleteTeams
 }
